@@ -2,32 +2,6 @@ from django.db import models
 
 
 class User(models.Model):
-    """Модель пользователя."""
-
-    name = models.CharField('Имя и Фамилия пользователя', max_length=50)
-    email = models.CharField(
-        'Адрес электронной почты',
-        max_length=50,
-        blank=True
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class Storage(models.Model):
-    """Модель склада."""
-
-    address = models.CharField('Адрес', max_length=200)
-    lat = models.FloatField('Широта')
-    lon = models.FloatField('Долгота')
-
-    def __str__(self):
-        return "Склад по адресу: {self.address}"
-
-
-class Box(models.Model):
-    """Модель ячейки."""
 
     status_choices = [
         (0, "Free"),
