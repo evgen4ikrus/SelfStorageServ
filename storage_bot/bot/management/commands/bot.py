@@ -9,12 +9,12 @@ from bot.models import User, Cell
 
 
 
-# Кладем telegram id при активации бота
+# Кладем telegram id при соглашении на обработку ПД
 def add_tgid(telegram_id: int):
     user = User(tgid=telegram_id)
     user.save()
 
-# Проверяем есть ли пользователь в БД
+# Проверяем есть ли id пользователя в БД
 def find_user(telegram_id: int):
     find_user = User.objects.all().filter(tgid=telegram_id)
     if not find_user:
