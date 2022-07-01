@@ -1,11 +1,11 @@
 from django.contrib import admin
-from bot.models import User, Box, Storage, Order
+from bot.models import *
 
 @admin.register(User)
 class AdminUser(admin.ModelAdmin):
     pass
 
-@admin.register(Box)
+@admin.register(Cell)
 class AdminBox(admin.ModelAdmin):
     pass
 
