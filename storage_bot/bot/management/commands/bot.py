@@ -7,6 +7,8 @@ from telegram.ext import CallbackContext, CommandHandler, Updater
 
 from bot.models import User, Cell
 
+
+
 # Кладем telegram id при активации бота
 def add_tgid(telegram_id: int):
     user = User(tgid=telegram_id)
@@ -23,22 +25,40 @@ def find_user(telegram_id: int):
 def make_order(telegram_id: int):
     pass
 
+
 def get_cells():
     cells = Cell.objects.all()
     return cells
 
 
+def get_prices():
+    pass
+
+
+def add_user_info():
+    pass
+
 
 def start(update: Update, context: CallbackContext):
+    message = f"Описание проекта, соглашение о ПД, ссылка"
+    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+
+def approve(update: Update, context: CallbackContext):
     user_id = update.message.from_user.id
-    if find_user(user_id):
-        message = f"Hello, your id is {user_id}!"
+    add_tgid(user_id)
+    message = f"Вы согласились на обработку своих данных, наверное мы сохраним их :)"
+    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+
+def account(update: Update, context: CallbackContext):
+    user_id = update.message.from_user.id
+    if find_user(user_id): 
+        message = f"Ваш личный кабинет"
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     else:
-        add_tgid(user_id)
-        message = f"Описание проекта, соглашение о ПД"
+        message = f"Мы вас не знаем, возможно вы не согласились на обработку ПД"
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-
 
 class Command(BaseCommand):
 
@@ -49,7 +69,11 @@ class Command(BaseCommand):
         dispatcher = updater.dispatcher
 
         start_handler = CommandHandler('start', start)
-        cells_handler = CommandHandler('cells', cells)
-        dispatcher.add_handler(start_handler, get_cells)
+        approve_handler = CommandHandler('approve', approve)
+        account_handler = CommandHandler('account', account)
+      
+        dispatcher.add_handler(start_handler)
+        dispatcher.add_handler(approve_handler)
+        dispatcher.add_handler(account_handler)
         updater.start_polling()
         updater.idle()
