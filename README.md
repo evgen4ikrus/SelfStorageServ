@@ -42,4 +42,4 @@ python manage.py makemigrations db; python manage.py migrate
 ```
 python manage.py bot
 ```
-На комманду `/hello` должен отреагировать, значит проект развернулся, все ок.
+На комманду `/hello` должен отреагировать, значит проект развернулся, все ок
