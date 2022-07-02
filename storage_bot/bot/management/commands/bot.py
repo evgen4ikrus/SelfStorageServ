@@ -2,8 +2,8 @@ import os
 
 from django.core.management.base import BaseCommand
 from dotenv import load_dotenv
-from telegram import Update, KeyboardButton, ReplyKeyboardMarkup
-from telegram.ext import CallbackContext, CommandHandler, Updater
+from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import CallbackContext, CommandHandler, Updater, CallbackQueryHandler
 
 from bot.models import User, Cell
 
@@ -63,19 +63,13 @@ def approve(update: Update, context: CallbackContext):
 
 def account(update: Update, context: CallbackContext):
     user_id = 1
+    chat_id = update.message.chat_id
     if find_user(user_id):
         message = "Ваш личный кабинет"
-        reply_markup = ReplyKeyboardMarkup(
-            keyboard=[
-                [KeyboardButton(text="Посмотреть личные данные"),],
-                [KeyboardButton(text="Редактировать личные данные"),],
-                [KeyboardButton(text=f"Посмотреть мои заказы"),],
-                [KeyboardButton(text="Назад"),],
-            ],
-            resize_keyboard=True,
-        )
+        reply_markup = get_account_keyboard()
         
-        update.message.reply_text(
+        context.bot.send_message(
+            chat_id=chat_id,
             text=message,
             reply_markup=reply_markup,
         )
@@ -99,6 +93,16 @@ def get_user_information(telegram_id):
 Адрес: {user.address}
 Email: {user.email}'''
     return user_information
+
+
+def get_account_keyboard():
+    keyboard=[
+        [InlineKeyboardButton("Посмотреть личные данные", callback_data='ererer'),],
+        [InlineKeyboardButton("Редактировать личные данные", callback_data='sdgsg'),],
+        [InlineKeyboardButton(f"Посмотреть мои заказы", callback_data='eredfdfhrer'),],
+        [InlineKeyboardButton("Назад", callback_data='erdfhdherer'),],
+    ]
+    return InlineKeyboardMarkup(keyboard)
 
 
 class Command(BaseCommand):
