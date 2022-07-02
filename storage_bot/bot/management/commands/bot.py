@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 
 from django.core.management.base import BaseCommand
@@ -7,7 +8,10 @@ from telegram.ext import CallbackContext, CommandHandler, Updater, CallbackQuery
 
 from bot.models import User, Cell
 
-
+BUTTON_PERSONAL_DATA = "Посмотреть личные данные"
+BUTTON_BACK = "Назад"
+BUTTON_EDIT_DATA = "Редактировать личные данные"
+BUTTON_WIEW_ORDERS = "Посмотреть мои заазы"
 
 """
 ------------------------------------------------------------------------------
@@ -41,6 +45,20 @@ def get_prices():
 
 
 def add_user_info():
+    pass
+
+
+def get_user_information(telegram_id):
+    user = User.objects.get(telegram_id=telegram_id)
+    user_information = f'''Имя: {user.name}
+Фамилия: {user.surname}
+Номер телефона: {user.phone}
+Адрес: {user.address}
+Email: {user.email}'''
+    return user_information
+
+
+def get_orders(telegram_id):
     pass
 
 
@@ -78,6 +96,21 @@ def account(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
+def keyboard_callback_handler(update: Update, context: CallbackContext):
+    query = update.callback_query
+    data = query.data
+    if data == BUTTON_PERSONAL_DATA:
+        user_id = 1
+        reply_markup = get_account_keyboard()
+        message = get_user_information(telegram_id=user_id)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
+    elif data == BUTTON_EDIT_DATA:
+        pass
+    elif data == BUTTON_WIEW_ORDERS:
+        pass
+    elif data == BUTTON_BACK:
+        pass
+
 
 """
 ------------------------------------------------------------------------------
@@ -85,22 +118,13 @@ def account(update: Update, context: CallbackContext):
 ------------------------------------------------------------------------------
 """
 
-def get_user_information(telegram_id):
-    user = User.objects.get(telegram_id=telegram_id)
-    user_information = f'''Имя: {user.name}
-Фамилия: {user.surname}
-Номер телефона: {user.phone}
-Адрес: {user.address}
-Email: {user.email}'''
-    return user_information
-
 
 def get_account_keyboard():
     keyboard=[
-        [InlineKeyboardButton("Посмотреть личные данные", callback_data='ererer'),],
-        [InlineKeyboardButton("Редактировать личные данные", callback_data='sdgsg'),],
-        [InlineKeyboardButton(f"Посмотреть мои заказы", callback_data='eredfdfhrer'),],
-        [InlineKeyboardButton("Назад", callback_data='erdfhdherer'),],
+        [InlineKeyboardButton("Посмотреть личные данные", callback_data=BUTTON_PERSONAL_DATA),],
+        [InlineKeyboardButton("Редактировать личные данные", callback_data=BUTTON_EDIT_DATA),],
+        [InlineKeyboardButton(f"Посмотреть мои заказы", callback_data=BUTTON_WIEW_ORDERS),],
+        [InlineKeyboardButton("Назад", callback_data=BUTTON_BACK),],
     ]
     return InlineKeyboardMarkup(keyboard)
 
@@ -116,9 +140,11 @@ class Command(BaseCommand):
         start_handler = CommandHandler('start', start)
         approve_handler = CommandHandler('approve', approve)
         account_handler = CommandHandler('account', account)
+        button_handler = CallbackQueryHandler(callback=keyboard_callback_handler, pass_chat_data=True)
       
         dispatcher.add_handler(start_handler)
         dispatcher.add_handler(approve_handler)
         dispatcher.add_handler(account_handler)
+        dispatcher.add_handler(button_handler)
         updater.start_polling()
         updater.idle()
