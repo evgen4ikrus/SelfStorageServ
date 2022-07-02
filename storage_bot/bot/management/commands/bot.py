@@ -16,12 +16,12 @@ from bot.models import User, Cell
 """
 # Кладем telegram id при соглашении на обработку ПД
 def add_tgid(telegram_id: int):
-    user = User(tgid=telegram_id)
+    user = User(telegram_id=telegram_id)
     user.save()
 
 # Проверяем есть ли id пользователя в БД
 def find_user(telegram_id: int):
-    find_user = User.objects.all().filter(tgid=telegram_id)
+    find_user = User.objects.filter(telegram_id=telegram_id)
     if not find_user:
         return False
     return True
@@ -63,7 +63,7 @@ def approve(update: Update, context: CallbackContext):
 
 def account(update: Update, context: CallbackContext):
     user_id = update.message.from_user.id
-    if find_user(user_id): 
+    if find_user(user_id):
         message = f"Ваш личный кабинет"
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     else:
