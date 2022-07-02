@@ -27,6 +27,16 @@ def find_user(telegram_id: int):
     return True
 
 
+def get_user_information(telegram_id):
+    user = User.objects.get(telegram_id=telegram_id)
+    user_information = f'''Имя: {user.name}
+Фамилия: {user.surname}
+Номер телефона: {user.phone}
+Адрес: {user.address}
+Email: {user.email}'''
+    return user_information
+
+
 def make_order(telegram_id: int):
     pass
 
