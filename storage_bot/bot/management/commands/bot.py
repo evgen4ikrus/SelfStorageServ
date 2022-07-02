@@ -2,7 +2,7 @@ import os
 
 from django.core.management.base import BaseCommand
 from dotenv import load_dotenv
-from telegram import Update
+from telegram import Update, KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import CallbackContext, CommandHandler, Updater
 
 from bot.models import User, Cell
@@ -25,16 +25,6 @@ def find_user(telegram_id: int):
     if not find_user:
         return False
     return True
-
-
-def get_user_information(telegram_id):
-    user = User.objects.get(telegram_id=telegram_id)
-    user_information = f'''Имя: {user.name}
-Фамилия: {user.surname}
-Номер телефона: {user.phone}
-Адрес: {user.address}
-Email: {user.email}'''
-    return user_information
 
 
 def make_order(telegram_id: int):
@@ -72,13 +62,44 @@ def approve(update: Update, context: CallbackContext):
 
 
 def account(update: Update, context: CallbackContext):
-    user_id = update.message.from_user.id
+    user_id = 1
     if find_user(user_id):
-        message = f"Ваш личный кабинет"
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+        message = "Ваш личный кабинет"
+        reply_markup = ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text="Посмотреть личные данные"),],
+                [KeyboardButton(text="Редактировать личные данные"),],
+                [KeyboardButton(text=f"Посмотреть мои заказы"),],
+                [KeyboardButton(text="Назад"),],
+            ],
+            resize_keyboard=True,
+        )
+        
+        update.message.reply_text(
+            text=message,
+            reply_markup=reply_markup,
+        )
     else:
         message = f"Мы вас не знаем, возможно вы не согласились на обработку ПД"
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+
+
+"""
+------------------------------------------------------------------------------
+Функции для личного кабинета
+------------------------------------------------------------------------------
+"""
+
+def get_user_information(telegram_id):
+    user = User.objects.get(telegram_id=telegram_id)
+    user_information = f'''Имя: {user.name}
+Фамилия: {user.surname}
+Номер телефона: {user.phone}
+Адрес: {user.address}
+Email: {user.email}'''
+    return user_information
+
 
 class Command(BaseCommand):
 
