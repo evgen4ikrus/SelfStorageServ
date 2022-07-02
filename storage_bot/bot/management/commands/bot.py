@@ -3,10 +3,10 @@ import os
 
 from django.core.management.base import BaseCommand
 from dotenv import load_dotenv
-from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackContext, CommandHandler, Updater, CallbackQueryHandler
 
-from bot.models import User, Cell
+from bot.models import User, Cell, Order
 
 BUTTON_PERSONAL_DATA = "Посмотреть личные данные"
 BUTTON_BACK = "Назад"
@@ -59,8 +59,15 @@ Email: {user.email}'''
 
 
 def get_orders(telegram_id):
-    pass
+    user = User.objects.get(telegram_id=telegram_id)
+    orders = Order.objects.filter(user=user)
+    return orders
 
+
+def get_number_orders(telegram_id):
+    user = User.objects.get(telegram_id=telegram_id)
+    orders_count = Order.objects.filter(user=user).count()
+    return orders_count
 
 """
 ------------------------------------------------------------------------------
@@ -99,15 +106,25 @@ def account(update: Update, context: CallbackContext):
 def keyboard_callback_handler(update: Update, context: CallbackContext):
     query = update.callback_query
     data = query.data
+    user_id = 1
     if data == BUTTON_PERSONAL_DATA:
-        user_id = 1
         reply_markup = get_account_keyboard()
         message = get_user_information(telegram_id=user_id)
         context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
     elif data == BUTTON_EDIT_DATA:
         pass
     elif data == BUTTON_WIEW_ORDERS:
-        pass
+        reply_markup = get_account_keyboard()
+        orders = get_orders(telegram_id=user_id)
+        for order in orders:
+            
+# Нужно изменить после редактирования модели - Ячейка
+
+            message = f'''Дата создания: {order.create_date}
+Ваш комментарий: {order.comment}'''
+            context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+        message = "Ваш личный кабинет"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
     elif data == BUTTON_BACK:
         pass
 
@@ -120,10 +137,11 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
 
 
 def get_account_keyboard():
+    orders_count = get_number_orders(telegram_id=1)
     keyboard=[
         [InlineKeyboardButton("Посмотреть личные данные", callback_data=BUTTON_PERSONAL_DATA),],
         [InlineKeyboardButton("Редактировать личные данные", callback_data=BUTTON_EDIT_DATA),],
-        [InlineKeyboardButton(f"Посмотреть мои заказы", callback_data=BUTTON_WIEW_ORDERS),],
+        [InlineKeyboardButton(f"Посмотреть мои заказы ({orders_count})", callback_data=BUTTON_WIEW_ORDERS),],
         [InlineKeyboardButton("Назад", callback_data=BUTTON_BACK),],
     ]
     return InlineKeyboardMarkup(keyboard)
