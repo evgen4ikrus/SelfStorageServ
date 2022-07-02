@@ -2,7 +2,7 @@ import os
 
 from django.core.management.base import BaseCommand
 from dotenv import load_dotenv
-from telegram import Update, KeyboardButton, ReplyKeyboardMarkup
+from telegram import Update
 from telegram.ext import CallbackContext, CommandHandler, Updater
 
 from bot.models import User, Cell
@@ -70,24 +70,6 @@ def account(update: Update, context: CallbackContext):
         message = f"Мы вас не знаем, возможно вы не согласились на обработку ПД"
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
-
-def display_menu(update: Update, context: CallbackContext):
-    reply_markup = ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text="Личный кабинет"),],
-            [KeyboardButton(text="Создать новый заказ"),],
-            [KeyboardButton(text="Наши тарифы"),],
-            [KeyboardButton(text="наши адреса"),],
-        ],
-        resize_keyboard=True,
-    )
-    
-    update.message.reply_text(
-        text='Привет',
-        reply_markup=reply_markup,
-    )
-
-
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
@@ -99,9 +81,7 @@ class Command(BaseCommand):
         start_handler = CommandHandler('start', start)
         approve_handler = CommandHandler('approve', approve)
         account_handler = CommandHandler('account', account)
-        lc_handler = CommandHandler('menu', display_menu)
-        
-        dispatcher.add_handler(lc_handler)
+      
         dispatcher.add_handler(start_handler)
         dispatcher.add_handler(approve_handler)
         dispatcher.add_handler(account_handler)
