@@ -77,7 +77,7 @@ def display_menu(update: Update, context: CallbackContext):
             [KeyboardButton(text="Личный кабинет"),],
             [KeyboardButton(text="Создать новый заказ"),],
             [KeyboardButton(text="Наши тарифы"),],
-            [KeyboardButton(text="Наши адреса"),],
+            [KeyboardButton(text="наши адреса"),],
         ],
         resize_keyboard=True,
     )
