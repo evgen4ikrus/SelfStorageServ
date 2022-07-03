@@ -102,20 +102,16 @@ def edit_user_data(text, user):
     global EDITABLE_DATA
     if EDITABLE_DATA == 'Имя':
         user.name = text
-        user.save()
     elif EDITABLE_DATA == 'Фамилия':
         user.surname = text
-        user.save()
     elif EDITABLE_DATA == 'Email':
         user.email = text
-        user.save()
     elif EDITABLE_DATA == 'Адрес':
         user.address = text
-        user.save()
     elif EDITABLE_DATA == 'Номер телефона':
         user.phone = text
-        user.save()
-
+    user.save()
+    
 """
 ------------------------------------------------------------------------------
 Хэндлеры команд для бота
