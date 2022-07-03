@@ -181,6 +181,7 @@ def keyboard_cabinet_callback_handler(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
         
     elif data == BUTTON_MAIN_MENU:
+        ##### Доработать после создания главного меню #######
         pass
     
     elif data == BUTTON_EDIT_NAME:
@@ -243,10 +244,10 @@ def get_data_edit_keyboard():
         [
             InlineKeyboardButton("Имя", callback_data=BUTTON_EDIT_NAME),
             InlineKeyboardButton("Фамилию", callback_data=BUTTON_EDIT_SURNAME),
-            InlineKeyboardButton("Адрес", callback_data=BUTTON_EDIT_EMAIL),
+            InlineKeyboardButton("Адрес", callback_data=BUTTON_EDIT_ADRESS),
         ],
         [
-            InlineKeyboardButton("Email", callback_data=BUTTON_EDIT_ADRESS),
+            InlineKeyboardButton("Email", callback_data=BUTTON_EDIT_EMAIL),
             InlineKeyboardButton("Номер телефона", callback_data=BUTTON_EDIT_PHONE),
         ],
         [InlineKeyboardButton("Назад", callback_data=BUTTON_PERSONAL_ACCOUNT),],
