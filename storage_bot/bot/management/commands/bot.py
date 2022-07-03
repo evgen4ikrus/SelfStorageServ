@@ -87,11 +87,11 @@ def approve(update: Update, context: CallbackContext):
 
 
 def account(update: Update, context: CallbackContext):
-    user_id = 1
+    user_id = update.message.from_user.id
     chat_id = update.message.chat_id
     if find_user(user_id):
         message = "Ваш личный кабинет"
-        reply_markup = get_account_keyboard()
+        reply_markup = get_account_keyboard(user_id)
         
         context.bot.send_message(
             chat_id=chat_id,
@@ -106,15 +106,17 @@ def account(update: Update, context: CallbackContext):
 def keyboard_callback_handler(update: Update, context: CallbackContext):
     query = update.callback_query
     data = query.data
-    user_id = 1
+    user_id = update.message.from_user.id
     if data == BUTTON_PERSONAL_DATA:
-        reply_markup = get_account_keyboard()
+        reply_markup = get_account_keyboard(user_id)
         message = get_user_information(telegram_id=user_id)
         context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
+        
     elif data == BUTTON_EDIT_DATA:
         pass
+    
     elif data == BUTTON_WIEW_ORDERS:
-        reply_markup = get_account_keyboard()
+        reply_markup = get_account_keyboard(user_id)
         orders = get_orders(telegram_id=user_id)
         for order in orders:
             
@@ -125,6 +127,7 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=update.effective_chat.id, text=message)
         message = "Ваш личный кабинет"
         context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
+        
     elif data == BUTTON_BACK:
         pass
 
@@ -136,8 +139,8 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
 """
 
 
-def get_account_keyboard():
-    orders_count = get_number_orders(telegram_id=1)
+def get_account_keyboard(user_id):
+    orders_count = get_number_orders(telegram_id=user_id)
     keyboard=[
         [InlineKeyboardButton("Посмотреть личные данные", callback_data=BUTTON_PERSONAL_DATA),],
         [InlineKeyboardButton("Редактировать личные данные", callback_data=BUTTON_EDIT_DATA),],
