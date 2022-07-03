@@ -8,6 +8,7 @@ from telegram.ext import CallbackContext, CommandHandler, Updater, CallbackQuery
 
 from bot.models import User, Cell, Order
 
+
 BUTTON_PERSONAL_DATA = "Посмотреть личные данные"
 BUTTON_BACK = "Назад"
 BUTTON_EDIT_DATA = "Редактировать личные данные"
@@ -106,7 +107,8 @@ def account(update: Update, context: CallbackContext):
 def keyboard_callback_handler(update: Update, context: CallbackContext):
     query = update.callback_query
     data = query.data
-    user_id = update.message.from_user.id
+    user_id = update.callback_query.message.chat.id
+    print(user_id)
     if data == BUTTON_PERSONAL_DATA:
         reply_markup = get_account_keyboard(user_id)
         message = get_user_information(telegram_id=user_id)
