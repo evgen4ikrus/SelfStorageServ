@@ -61,6 +61,19 @@ def add_user_info():
     pass
 
 
+def get_order_information(order):
+    cell = order.cell
+    storage = cell.storage
+    message = f'''Дата создания заказа: {order.create_date}
+Ваши вещи находится в ячейке № {cell.number} на нашем складе по адресу: {storage.address}, на {cell.floor} этаже
+Температура хранения: {cell.temperature} градусов цельсия
+Площадь ячейки: {cell.size} м2, высота потолка : {cell.height} м.
+Цена аренды: {cell.price}р. в месяц
+Дата окончания аренды : {cell.lease_time}
+Ваш комментарий по заказу: {order.comment}'''
+    return message
+
+
 def get_user_information(telegram_id):
     user = get_user(telegram_id=telegram_id)
     user_information = f'''Имя: {user.name}
@@ -72,13 +85,13 @@ Email: {user.email}'''
 
 
 def get_orders(telegram_id):
-    user = User.objects.get(telegram_id=telegram_id)
+    user = get_user(telegram_id=telegram_id)
     orders = Order.objects.filter(user=user)
     return orders
 
 
 def get_number_orders(telegram_id):
-    user = User.objects.get(telegram_id=telegram_id)
+    user = get_user(telegram_id=telegram_id)
     orders_count = Order.objects.filter(user=user).count()
     return orders_count
 
@@ -134,11 +147,7 @@ def keyboard_cabinet_callback_handler(update: Update, context: CallbackContext):
         reply_markup = get_account_keyboard(user_id)
         orders = get_orders(telegram_id=user_id)
         for order in orders:
-            
-# Нужно изменить после редактирования модели - Ячейка
-
-            message = f'''Дата создания: {order.create_date}
-Ваш комментарий: {order.comment}'''
+            message = get_order_information(order)
             context.bot.send_message(chat_id=update.effective_chat.id, text=message)
         message = "Ваш личный кабинет"
         context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
