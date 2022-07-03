@@ -69,7 +69,7 @@ def get_order_information(order):
 Температура хранения: {cell.temperature} градусов цельсия
 Площадь ячейки: {cell.size} м2, высота потолка : {cell.height} м.
 Цена аренды: {cell.price}р. в месяц
-Дата окончания аренды : {cell.lease_time}
+Дата окончания аренды : {order.lease_time}
 Ваш комментарий по заказу: {order.comment}'''
     return message
 

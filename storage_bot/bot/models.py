@@ -84,14 +84,6 @@ class Cell(models.Model):
     price = models.FloatField(
         "Цена",
     )
-    booked = models.BooleanField(
-        "Занято",
-        default=False
-    )
-    lease_time = DateTimeField(
-        "Дата окончания аренды",
-        blank=True,
-    )
 
     def __str__(self):
         return f'Ячейка №{self.id}, склад №{self.storage.id}'
@@ -125,6 +117,8 @@ class Order(models.Model):
         max_length=100,
         blank=True
     )
-
+    lease_time = DateTimeField(
+        "Дата окончания аренды",
+    )
     def __str__(self):
         return f"Заказ от: {self.user} по: {self.cell}"
