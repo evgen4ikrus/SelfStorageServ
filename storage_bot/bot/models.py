@@ -19,6 +19,7 @@ class User(models.Model):
         "Фамилия",
         max_length=50,
         blank=True,
+        null=True,
     )
     email = models.EmailField(
         "Электронная почта",
