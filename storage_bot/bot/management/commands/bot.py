@@ -1,3 +1,4 @@
+from email import message
 import os
 from turtle import update
 
@@ -21,6 +22,7 @@ BUTTON_EDIT_ADRESS = "Редактировать адрес"
 BUTTON_EDIT_PHONE = "Редактировать телефон"
 BUTTON_PERSONAL_ACCOUNT = 'Личный кабинет'
 
+EDITABLE_DATA = None
 """
 ------------------------------------------------------------------------------
 Команды для работы с БД
@@ -95,6 +97,25 @@ def get_number_orders(telegram_id):
     orders_count = Order.objects.filter(user=user).count()
     return orders_count
 
+
+def edit_user_data(text, user):
+    global EDITABLE_DATA
+    if EDITABLE_DATA == 'Имя':
+        user.name = text
+        user.save()
+    elif EDITABLE_DATA == 'Фамилия':
+        user.surname = text
+        user.save()
+    elif EDITABLE_DATA == 'Email':
+        user.email = text
+        user.save()
+    elif EDITABLE_DATA == 'Адрес':
+        user.address = text
+        user.save()
+    elif EDITABLE_DATA == 'Номер телефона':
+        user.phone = text
+        user.save()
+
 """
 ------------------------------------------------------------------------------
 Хэндлеры команд для бота
@@ -129,7 +150,18 @@ def account(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
+def data_edit_message_handler(update: Update, context: CallbackContext):
+    text = update.message.text
+    user_id = update.message.from_user.id
+    user = get_user(telegram_id=user_id)
+    edit_user_data(text, user)
+    reply_markup = get_data_edit_keyboard()
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Личные данные обновлены")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Что хотите изменить ещё?", reply_markup=reply_markup)
+
+
 def keyboard_cabinet_callback_handler(update: Update, context: CallbackContext):
+    global EDITABLE_DATA
     query = update.callback_query
     data = query.data
     user_id = update.callback_query.message.chat.id
@@ -140,7 +172,7 @@ def keyboard_cabinet_callback_handler(update: Update, context: CallbackContext):
         
     elif data == BUTTON_EDIT_DATA:
         reply_markup = get_data_edit_keyboard()
-        message = "Что хотите изменить/добавить?"
+        message = "Что хотите изменить?"
         context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
     
     elif data == BUTTON_WIEW_ORDERS:
@@ -156,19 +188,29 @@ def keyboard_cabinet_callback_handler(update: Update, context: CallbackContext):
         pass
     
     elif data == BUTTON_EDIT_NAME:
-        pass
+        EDITABLE_DATA = 'Имя'
+        message = "Введите Ваше имя:"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
         
     elif data == BUTTON_EDIT_SURNAME:
-        pass
+        EDITABLE_DATA = 'Фамилия'
+        message = "Введите Вашу Фамилию:"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     
     elif data == BUTTON_EDIT_EMAIL:
-        pass
+        EDITABLE_DATA = 'Email'
+        message = "Введите Ваш email:"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     
     elif data == BUTTON_EDIT_ADRESS:
-        pass
+        EDITABLE_DATA = 'Адрес'
+        message = "Введите Ваш адрес:"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
     elif data == BUTTON_EDIT_PHONE:
-        pass
+        EDITABLE_DATA = 'Номер телефона'
+        message = "Введите Ваш номер телефона:"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     
     elif data == BUTTON_PERSONAL_ACCOUNT:
         message = "Ваш личный кабинет"
@@ -179,8 +221,6 @@ def keyboard_cabinet_callback_handler(update: Update, context: CallbackContext):
             text=message,
             reply_markup=reply_markup,
         )
-
-
 
 """
 ------------------------------------------------------------------------------
@@ -235,6 +275,7 @@ class Command(BaseCommand):
         dispatcher.add_handler(approve_handler)
         dispatcher.add_handler(account_handler)
         dispatcher.add_handler(button_cabinet_handler)
+        dispatcher.add_handler(MessageHandler(filters=Filters.all, callback=data_edit_message_handler))
         
         updater.start_polling()
         updater.idle()
