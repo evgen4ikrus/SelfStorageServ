@@ -1,9 +1,10 @@
 import os
+from turtle import update
 
 from django.core.management.base import BaseCommand
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import CallbackContext, CommandHandler, Updater, CallbackQueryHandler
+from telegram.ext import CallbackContext, CommandHandler, Updater, CallbackQueryHandler, MessageHandler, Filters
 
 from bot.models import User, Cell, Order
 
@@ -42,6 +43,11 @@ def make_order(telegram_id: int):
     pass
 
 
+def get_user(telegram_id):
+    user = User.objects.get(telegram_id=telegram_id)
+    return user
+
+
 def get_cells():
     cells = Cell.objects.all()
     return cells
@@ -56,7 +62,7 @@ def add_user_info():
 
 
 def get_user_information(telegram_id):
-    user = User.objects.get(telegram_id=telegram_id)
+    user = get_user(telegram_id=telegram_id)
     user_information = f'''Имя: {user.name}
 Фамилия: {user.surname}
 Номер телефона: {user.phone}
@@ -142,7 +148,7 @@ def keyboard_cabinet_callback_handler(update: Update, context: CallbackContext):
     
     elif data == BUTTON_EDIT_NAME:
         pass
-    
+        
     elif data == BUTTON_EDIT_SURNAME:
         pass
     
@@ -156,7 +162,6 @@ def keyboard_cabinet_callback_handler(update: Update, context: CallbackContext):
         pass
     
     elif data == BUTTON_PERSONAL_ACCOUNT:
-        print('sddsg')
         message = "Ваш личный кабинет"
         reply_markup = get_account_keyboard(user_id)
         
@@ -216,7 +221,7 @@ class Command(BaseCommand):
         approve_handler = CommandHandler('approve', approve)
         account_handler = CommandHandler('account', account)
         button_cabinet_handler = CallbackQueryHandler(callback=keyboard_cabinet_callback_handler, pass_chat_data=True)
-      
+        
         dispatcher.add_handler(start_handler)
         dispatcher.add_handler(approve_handler)
         dispatcher.add_handler(account_handler)
