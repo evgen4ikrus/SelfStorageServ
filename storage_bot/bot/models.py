@@ -64,6 +64,19 @@ class Cell(models.Model):
         related_name='cells',
         on_delete=models.CASCADE
     )
+    number = models.IntegerField(
+        "Номер"
+    )
+    temperature = models.CharField(
+        "Температура",
+        max_length=20
+    )
+    height = models.FloatField(
+        "Высота"
+    )
+    floor = models.IntegerField(
+        "Этаж",
+    )
     size = models.CharField(
         "Размер",
         max_length=100,
