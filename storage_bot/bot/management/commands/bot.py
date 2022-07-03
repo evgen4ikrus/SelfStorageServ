@@ -1,4 +1,3 @@
-from datetime import datetime
 import os
 
 from django.core.management.base import BaseCommand
@@ -10,9 +9,16 @@ from bot.models import User, Cell, Order
 
 
 BUTTON_PERSONAL_DATA = "Посмотреть личные данные"
-BUTTON_BACK = "Назад"
+BUTTON_MAIN_MENU = "Назад"
 BUTTON_EDIT_DATA = "Редактировать личные данные"
 BUTTON_WIEW_ORDERS = "Посмотреть мои заазы"
+
+BUTTON_EDIT_NAME = "Редактировать имя"
+BUTTON_EDIT_SURNAME = "Редактировать фамилию"
+BUTTON_EDIT_EMAIL = "Редактировать email"
+BUTTON_EDIT_ADRESS = "Редактировать адрес"
+BUTTON_EDIT_PHONE = "Редактировать телефон"
+BUTTON_PERSONAL_ACCOUNT = 'Личный кабинет'
 
 """
 ------------------------------------------------------------------------------
@@ -104,18 +110,19 @@ def account(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
-def keyboard_callback_handler(update: Update, context: CallbackContext):
+def keyboard_cabinet_callback_handler(update: Update, context: CallbackContext):
     query = update.callback_query
     data = query.data
     user_id = update.callback_query.message.chat.id
-    print(user_id)
     if data == BUTTON_PERSONAL_DATA:
         reply_markup = get_account_keyboard(user_id)
         message = get_user_information(telegram_id=user_id)
         context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
         
     elif data == BUTTON_EDIT_DATA:
-        pass
+        reply_markup = get_data_edit_keyboard()
+        message = "Что хотите изменить/добавить?"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
     
     elif data == BUTTON_WIEW_ORDERS:
         reply_markup = get_account_keyboard(user_id)
@@ -130,13 +137,40 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
         message = "Ваш личный кабинет"
         context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=reply_markup)
         
-    elif data == BUTTON_BACK:
+    elif data == BUTTON_MAIN_MENU:
         pass
+    
+    elif data == BUTTON_EDIT_NAME:
+        pass
+    
+    elif data == BUTTON_EDIT_SURNAME:
+        pass
+    
+    elif data == BUTTON_EDIT_EMAIL:
+        pass
+    
+    elif data == BUTTON_EDIT_ADRESS:
+        pass
+
+    elif data == BUTTON_EDIT_PHONE:
+        pass
+    
+    elif data == BUTTON_PERSONAL_ACCOUNT:
+        print('sddsg')
+        message = "Ваш личный кабинет"
+        reply_markup = get_account_keyboard(user_id)
+        
+        context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=message,
+            reply_markup=reply_markup,
+        )
+
 
 
 """
 ------------------------------------------------------------------------------
-Функции для личного кабинета
+Клавиатуры
 ------------------------------------------------------------------------------
 """
 
@@ -144,10 +178,28 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
 def get_account_keyboard(user_id):
     orders_count = get_number_orders(telegram_id=user_id)
     keyboard=[
-        [InlineKeyboardButton("Посмотреть личные данные", callback_data=BUTTON_PERSONAL_DATA),],
-        [InlineKeyboardButton("Редактировать личные данные", callback_data=BUTTON_EDIT_DATA),],
+        [
+            InlineKeyboardButton("Посмотреть личные данные", callback_data=BUTTON_PERSONAL_DATA),
+            InlineKeyboardButton("Редактировать личные данные", callback_data=BUTTON_EDIT_DATA),
+        ],
         [InlineKeyboardButton(f"Посмотреть мои заказы ({orders_count})", callback_data=BUTTON_WIEW_ORDERS),],
-        [InlineKeyboardButton("Назад", callback_data=BUTTON_BACK),],
+        [InlineKeyboardButton("Назад", callback_data=BUTTON_MAIN_MENU),],
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+
+def get_data_edit_keyboard():
+    keyboard=[
+        [
+            InlineKeyboardButton("Имя", callback_data=BUTTON_EDIT_NAME),
+            InlineKeyboardButton("Фамилию", callback_data=BUTTON_EDIT_SURNAME),
+            InlineKeyboardButton("Адрес", callback_data=BUTTON_EDIT_EMAIL),
+        ],
+        [
+            InlineKeyboardButton("Email", callback_data=BUTTON_EDIT_ADRESS),
+            InlineKeyboardButton("Номер телефона", callback_data=BUTTON_EDIT_PHONE),
+        ],
+        [InlineKeyboardButton("Назад", callback_data=BUTTON_PERSONAL_ACCOUNT),],
     ]
     return InlineKeyboardMarkup(keyboard)
 
@@ -163,11 +215,12 @@ class Command(BaseCommand):
         start_handler = CommandHandler('start', start)
         approve_handler = CommandHandler('approve', approve)
         account_handler = CommandHandler('account', account)
-        button_handler = CallbackQueryHandler(callback=keyboard_callback_handler, pass_chat_data=True)
+        button_cabinet_handler = CallbackQueryHandler(callback=keyboard_cabinet_callback_handler, pass_chat_data=True)
       
         dispatcher.add_handler(start_handler)
         dispatcher.add_handler(approve_handler)
         dispatcher.add_handler(account_handler)
-        dispatcher.add_handler(button_handler)
+        dispatcher.add_handler(button_cabinet_handler)
+        
         updater.start_polling()
         updater.idle()
