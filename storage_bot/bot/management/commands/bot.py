@@ -111,6 +111,7 @@ def edit_user_data(text, user):
     elif EDITABLE_DATA == 'Номер телефона':
         user.phone = text
     user.save()
+    EDITABLE_DATA = None
     
 """
 ------------------------------------------------------------------------------
@@ -147,13 +148,15 @@ def account(update: Update, context: CallbackContext):
 
 
 def data_edit_message_handler(update: Update, context: CallbackContext):
-    text = update.message.text
-    user_id = update.message.from_user.id
-    user = get_user(telegram_id=user_id)
-    edit_user_data(text, user)
-    reply_markup = get_data_edit_keyboard()
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Личные данные обновлены")
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Что хотите изменить ещё?", reply_markup=reply_markup)
+    global EDITABLE_DATA
+    if EDITABLE_DATA != None:
+        text = update.message.text
+        user_id = update.message.from_user.id
+        user = get_user(telegram_id=user_id)
+        edit_user_data(text, user)
+        reply_markup = get_data_edit_keyboard()
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Личные данные обновлены")
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Что хотите изменить ещё?", reply_markup=reply_markup)
 
 
 def keyboard_cabinet_callback_handler(update: Update, context: CallbackContext):
