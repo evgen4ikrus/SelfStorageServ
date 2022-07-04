@@ -41,7 +41,7 @@ BUTTON_CONFIRM = "Подтвердить заказ"
 ------------------------------------------------------------------------------
 """
 def find_user(telegram_id: int):
-    return User.objects.filter(telegram_id=telegram_id)
+    return User.objects.get(telegram_id=telegram_id)
 
 
 def find_cells(size):
@@ -55,6 +55,7 @@ def find_cells(size):
 
 def get_user_information(telegram_id):
     user = find_user(telegram_id=telegram_id)
+    print(user.name)
     user_information = f'''Имя: {user.name}
 Фамилия: {user.surname}
 Номер телефона: {user.phone}
