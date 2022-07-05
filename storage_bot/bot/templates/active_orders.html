@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="favicon.ico">
 
-    <title>Store</title>
+    <title>SelfStorage</title>
 
     <link
       rel="stylesheet"
@@ -55,6 +55,31 @@
             </table>
         </div>
     </div>
+    <div class="container">
+      <h2>Мои склады ({{ storages.count }})</h2>
+      <div class="table-responsive">
+          <table class="table">
+              <thead>
+                  <tr>
+                  <th class="table-element">#</th>
+                  <th class="table-element">Склад</th>
+                  <th class="table-element">Адрес</th>
+                  <th class="table-element">Режим работы</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for storage in storages %}
+                  <tr>
+                      <td class="table-element">{{ forloop.counter }}</td>
+                      <td class="table-element"><a href="{% url 'storage' storageid=storage.id %}">{{ storage }}</a></td>
+                      <td class="table-element">{{ storage.address }}</td>
+                      <td class="table-element">{{ storage.work_time }}</td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      </div>
+  </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script
       src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"

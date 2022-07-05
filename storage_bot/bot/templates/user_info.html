@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="favicon.ico">
 
-    <title>Store</title>
+    <title>User</title>
 
     <link
       rel="stylesheet"
@@ -28,12 +28,12 @@
     <div class="container">
         <h2>{{user}}</h2>
         <div class="table-responsive">
-            <div>Телеграм ID: {{user.telegram_id}}</div>
-            <div>Имя: {{user.name}}</div>
-            <div>Фамилия: {{user.surname}}</div>
-            <div>Электронная почта: {{user.email}}</div>
-            <div>Адрес: {{user.address}}</div>
-            <div>Телефон: {{user.phone}}</div>
+            <div><b>Телеграм ID:</b> {{user.telegram_id}}</div>
+            <div><b>Имя:</b> {{user.name}}</div>
+            <div><b>Фамилия:</b> {{user.surname}}</div>
+            <div><b>Электронная почта:</b> {{user.email}}</div>
+            <div><b>Адрес:</b> {{user.address}}</div>
+            <div><b>Телефон:</b> {{user.phone}}</div>
             <br>
             <div><a href="{% url 'active_orders' %}">Назад</a></div>
         </div>
