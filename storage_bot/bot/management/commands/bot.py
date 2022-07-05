@@ -3,11 +3,12 @@ import datetime
 
 from django.core.management.base import BaseCommand
 from dotenv import load_dotenv
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, LabeledPrice 
 from telegram.ext import CallbackContext, CommandHandler, Updater, CallbackQueryHandler, MessageHandler, Filters, ConversationHandler
 
 from bot.models import User, Cell, Order, Storage
 
+PAYMENT_PROVIDER_TOKEN = "401643678:TEST:69bee2fc-68b3-4ff5-a470-404a855b8c69"
 
 WELCOME = 0
 PROFILE = 1
@@ -355,6 +356,21 @@ def order_callback(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=chat_id, text=message, reply_markup=reply_markup,)
     return PROFILE
 
+
+def shipping_callback(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    title = "Оплата аренды ячейки"
+    description = "Оплачиваем заказ"
+    payload = "Custom-Payload"
+    currency = "USD"
+    price = 1
+    prices = [LabeledPrice("Test", price * 100)]
+
+    context.bot.send_invoice(
+        chat_id, title, description, payload, PAYMENT_PROVIDER_TOKEN, currency, prices
+    )
+
+
 def cancel(update: Update, context: CallbackContext):
     return ConversationHandler.END
 
@@ -441,7 +457,13 @@ def confirm_order():
     ]
     return InlineKeyboardMarkup(keyboard)
 
-
+def payment_keyboard():
+    keyboard=[
+        [
+            InlineKeyboardButton("Оплатить", callback_data=shipping_callback)
+        ],
+    ]
+    return InlineKeyboardMarkup(keyboard)
 
 class Command(BaseCommand):
 
@@ -458,10 +480,16 @@ class Command(BaseCommand):
                     callback=start_menu_handler, 
                     pass_chat_data=True,
                 )],
-                PROFILE: [CallbackQueryHandler(
-                    callback=keyboard_cabinet_callback_handler, 
-                    pass_chat_data=True,
-                )],
+                PROFILE: [
+                    CallbackQueryHandler(
+                        callback=keyboard_cabinet_callback_handler, 
+                        pass_chat_data=True,
+                ), 
+                    MessageHandler(
+                        Filters.text,
+                        callback=data_edit_message_handler, 
+                ),
+                    ],
                 USER_REGISTATION: [MessageHandler(
                     Filters.contact, 
                     contact_callback
@@ -494,6 +522,5 @@ class Command(BaseCommand):
             fallbacks=[CommandHandler('start', start)],
             )
         dispatcher.add_handler(handler)
-
         updater.start_polling()
         updater.idle()
