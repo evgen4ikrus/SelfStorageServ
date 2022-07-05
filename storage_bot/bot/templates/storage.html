@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Security screen">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Storage</title>
+
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous">
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+      integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+      crossorigin="anonymous">
+  </head>
+
+  <body>
+    <div class="container">
+        <h2>{{storage}}</h2>
+        <div class="table-responsive">
+            <div><b>Адрес:</b> {{storage.address}}</div>
+            <div><b>Режим работы:</b> {{storage.work_time}}</div>
+        </div>
+    </div>
+    <div class="container">
+        <h2>Ячейки ({{ cells.count }})</h2>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                    <th class="table-element">#</th>
+                    <th class="table-element">Ячейка</th>
+                    <th class="table-element">Температура</th>
+                    <th class="table-element">Высота</th>
+                    <th class="table-element">Этаж</th>
+                    <th class="table-element">Размер</th>
+                    <th class="table-element">Цена</th>
+                    <th class="table-element">Забронировано</th>
+                    <th class="table-element">Время окончания аренды</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cell in cells %}
+                    <tr>
+                        <td class="table-element">{{ forloop.counter }}</td>
+                        <td class="table-element">Ячейка №{{ cell.number }}</td>
+                        <td class="table-element">{{ cell.temperature }}°С</td>
+                        <td class="table-element">{{ cell.height }} м</td>
+                        <td class="table-element">{{ cell.floor }}</td>
+                        <td class="table-element">{{ cell.size }} м<sup>3</sup></td>
+                        <td class="table-element">{{ cell.price }} руб</td>
+                        <td class="table-element">{% if cell.booked %} Да {% else %} Нет {% endif %}</td>
+                        <td class="table-element">{{ cell.lease_time }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div><a href="{% url 'active_orders' %}">Назад</a></div>
+        </div>
+    </div>
+                
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+      integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
